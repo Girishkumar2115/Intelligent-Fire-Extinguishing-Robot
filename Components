@@ -1,0 +1,7 @@
+Required Components:
+Arduino Uno
+3 Flame Sensors (Connected to A0, A1, A2)
+L298N Motor Driver
+4 DC Motors (For movement)
+Buzzer (For alerting)
+9V Battery (For power)
