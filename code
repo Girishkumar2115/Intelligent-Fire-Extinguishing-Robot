@@ -1,0 +1,105 @@
+// Flame Sensor Pins (Analog Input)
+const int flameSensor1 = A0;
+const int flameSensor2 = A1;
+const int flameSensor3 = A2;
+
+// Buzzer Pin
+const int buzzer = 7;
+
+// Motor Driver Pins (L298N)
+const int motor1A = 8;  // Left Motor Forward
+const int motor1B = 9;  // Left Motor Backward
+const int motor2A = 10; // Right Motor Forward
+const int motor2B = 11; // Right Motor Backward
+
+// Fire Detection Threshold
+const int flameThreshold = 500;  // Lower value means fire is detected
+
+void setup() {
+    Serial.begin(9600);  // Start Serial Monitor
+
+    // Setup Flame Sensors as Input
+    pinMode(flameSensor1, INPUT);
+    pinMode(flameSensor2, INPUT);
+    pinMode(flameSensor3, INPUT);
+
+    // Setup Buzzer as Output
+    pinMode(buzzer, OUTPUT);
+
+    // Setup Motor Driver as Output
+    pinMode(motor1A, OUTPUT);
+    pinMode(motor1B, OUTPUT);
+    pinMode(motor2A, OUTPUT);
+    pinMode(motor2B, OUTPUT);
+
+    Serial.println(" Fire Extinguishing Robot Ready...");
+}
+
+void loop() {
+    // Read Sensor Values
+    int flame1 = analogRead(flameSensor1);
+    int flame2 = analogRead(flameSensor2);
+    int flame3 = analogRead(flameSensor3);
+
+    Serial.print("Flame Sensor 1: "); Serial.println(flame1);
+    Serial.print("Flame Sensor 2: "); Serial.println(flame2);
+    Serial.print("Flame Sensor 3: "); Serial.println(flame3);
+
+    bool fireDetected = false;
+
+    // Check if any sensor detects fire
+    if (flame1 < flameThreshold || flame2 < flameThreshold || flame3 < flameThreshold) {
+        fireDetected = true;
+        tone(buzzer, 1000); // Turn on buzzer
+        delay(500);
+        noTone(buzzer);
+    } else {
+        noTone(buzzer);
+    }
+
+    // Move the robot based on flame sensor detection
+    if (flame2 < flameThreshold) {
+        moveForward(); // Move Forward if Center Sensor detects fire
+    } else if (flame1 < flameThreshold) {
+        turnLeft(); // Turn Left if Left Sensor detects fire
+    } else if (flame3 < flameThreshold) {
+        turnRight(); // Turn Right if Right Sensor detects fire
+    } else {
+        stopMotors(); // Stop if no fire detected
+    }
+
+    delay(500); // Small Delay Before Next Reading
+}
+
+// Functions for Motor Control
+void moveForward() {
+    digitalWrite(motor1A, HIGH);
+    digitalWrite(motor1B, LOW);
+    digitalWrite(motor2A, HIGH);
+    digitalWrite(motor2B, LOW);
+    Serial.println(" Moving Forward...");
+}
+
+void turnLeft() {
+    digitalWrite(motor1A, LOW);
+    digitalWrite(motor1B, HIGH);
+    digitalWrite(motor2A, HIGH);
+    digitalWrite(motor2B, LOW);
+    Serial.println(" Turning Left...");
+}
+
+void turnRight() {
+    digitalWrite(motor1A, HIGH);
+    digitalWrite(motor1B, LOW);
+    digitalWrite(motor2A, LOW);
+    digitalWrite(motor2B, HIGH);
+    Serial.println(" Turning Right...");
+}
+
+void stopMotors() {
+    digitalWrite(motor1A, LOW);
+    digitalWrite(motor1B, LOW);
+    digitalWrite(motor2A, LOW);
+    digitalWrite(motor2B, LOW);
+    Serial.println(" Stopping...");
+}
